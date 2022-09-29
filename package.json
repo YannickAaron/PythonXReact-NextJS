@@ -1,0 +1,40 @@
+{
+  "name": "python-react",
+  "version": "0.0.1",
+  "private": true,
+  "license": "UNLICENSED",
+  "workspaces": {
+    "packages": [
+      "python-react/*"
+    ]
+  },
+  "scripts": {
+    "build": "yarn --cwd python-react run build",
+    "clean": "find . -name node_modules -o -name .next -o -name .expo -type d -prune | xargs rm -rf",
+    "db-migrate-dev": "yarn --cwd python-react prisma migrate dev",
+    "db-nuke": "docker compose down --volumes --remove-orphans",
+    "db-up": "docker compose up -d",
+    "dev": "yarn --cwd python-react run dev",
+    "lint": "TIMING=1 turbo run lint",
+    "lint:fix": "yarn --cwd python-react run lint:fix",
+    "lint:staged": "lint-staged",
+    "prepare": "husky install",
+    "prisma": "yarn --cwd python-react prisma",
+    "prisma-dev": "yarn db-migrate-dev && yarn --cwd python-react prisma generate",
+    "test": "yarn --cwd python-react run test"
+  },
+  "prettier": {
+    "printWidth": 80,
+    "singleQuote": true,
+    "trailingComma": "all"
+  },
+  "dependencies": {
+    "@commitlint/cli": "17.0.3",
+    "@commitlint/config-conventional": "17.0.3",
+    "@types/dotenv-flow": "3.2.0",
+    "dotenv-flow": "3.2.0",
+    "husky": "8.0.1",
+    "json-sort-cli": "2.1.0"
+  },
+  "packageManager": "yarn@1.22.19"
+}

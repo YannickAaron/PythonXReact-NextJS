@@ -1,0 +1,202 @@
+datasource db {
+  provider = "postgres"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum ProfileType {
+  COMPANY
+  PRIVATE
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+
+  isAdmin Boolean @default(false)
+
+  profileType ProfileType @default(PRIVATE)
+
+  firstName   String?
+  lastName    String?
+  /// needed for company users only
+  companyName String?
+  /// proof of identity for private holders
+  birthday    DateTime?
+
+  street  String?
+  city    String?
+  zipCode String?
+
+  isComplete Boolean @default(false)
+
+  vehicleRegistrations VehicleRegistration[]
+  contracts            Contract[]
+  accounts             Account[]
+  sessions             Session[]
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+enum PayoutType {
+  /// tax optimized
+  FIXED
+  /// max payout
+  FIXED_MAX
+  RELATIVE
+}
+
+enum ProcessingStatus {
+  /// nothing has happened yet
+  PENDING
+  /// has been submitted to uba
+  SUBMITTED
+  /// has been confirmed by uba
+  CONFIRMED
+  /// has been rejected by uba
+  REJECTED
+  /// had been payed by us
+  PAYED
+}
+
+model Note {
+  id         String   @id @default(cuid())
+  text       String
+  contractId String
+  Contract   Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model ContractStatus {
+  id         String           @id @default(cuid())
+  status     ProcessingStatus @default(PENDING)
+  contractId String
+  contract   Contract         @relation(fields: [contractId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model Contract {
+  id String @id @default(cuid())
+
+  user_firstName   String
+  user_lastName    String
+  /// only relevant for private users
+  user_birthday    DateTime?
+  user_profileType ProfileType
+
+  user_street  String
+  user_city    String
+  user_zipCode String
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  payoutType     PayoutType
+  payout         Float
+  donation       Float
+  /// year for which we request the certificate for
+  contractedYear Int
+
+  /// company name in case of company users
+  reg_name                 String?
+  /// only relevant for private users
+  reg_firstName            String?
+  reg_registrationDate     DateTime?
+  reg_identificationNumber String?
+  reg_engineType           String?
+  reg_vehicleClass         String?
+  reg_imageFront           String
+  reg_imageBack            String
+
+  vehicleRegistration   VehicleRegistration @relation(fields: [vehicleRegistrationId], references: [id])
+  vehicleRegistrationId String
+
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @default(now())
+  Note           Note[]
+  ContractStatus ContractStatus[]
+
+  @@unique([userId, vehicleRegistrationId, contractedYear])
+}
+
+enum EngineType {
+  EV_0004
+}
+
+/// might be manually typed or photographed and ocr analyzed
+/// this is a direct "copy" of the content
+model VehicleRegistration {
+  id String @id @default(cuid())
+
+  /// pre-fill from ocr, Nachname / Firmenname
+  name                 String?
+  /// pre-fill from ocr, Vorname
+  firstName            String?
+  /// pre-fill from ocr
+  registrationDate     DateTime?
+  /// pre-fill from ocr
+  identificationNumber String?
+  /// pre-fill from ocr, must be "Elektro / 0004" as otherwise it's irrelevant for us (yet)
+  engineType           EngineType?
+  /// pre-fill from ocr
+  vehicleClass         String?
+
+  imageFront String?
+  imageBack  String?
+
+  isComplete Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  userId    String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contracts Contract[]
+
+  // there currently is a stupid limitation in prisma only allowing unique conditions in single where clauses
+  // https://github.com/prisma/prisma/discussions/4185
+  @@unique([id, userId])
+  @@unique([identificationNumber, userId])
+}
