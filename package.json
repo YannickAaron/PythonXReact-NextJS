@@ -14,7 +14,7 @@
     "db-migrate-dev": "yarn --cwd python-react prisma migrate dev",
     "db-nuke": "docker compose down --volumes --remove-orphans",
     "db-up": "docker compose up -d",
-    "dev": "yarn --cwd python-react run dev",
+    "dev": "yarn db-up && yarn db-migrate-dev && yarn --cwd python-react run dev",
     "lint": "TIMING=1 turbo run lint",
     "lint:fix": "yarn --cwd python-react run lint:fix",
     "lint:staged": "lint-staged",
