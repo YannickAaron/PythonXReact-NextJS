@@ -16,30 +16,64 @@ import Head from 'next/head';
 import Image from 'next/image';
 import styles from '../styles/Home.module.css';
 
-import io, { Socket } from 'socket.io-client';
-import { useState, useEffect } from 'react';
+import {
+  createContext,
+  useContext,
+  useMemo,
+  useEffect,
+  ReactNode,
+} from 'react';
 
-let socket = null;
+export const isBrowser = typeof window !== 'undefined';
+/*export const wsInstance = isBrowser
+  ? new WebSocket('ws://localhost:8000/ws')
+  : null;*/
 
 const Home: NextPage = ({}) => {
   let connected = false;
   let progress = 0;
 
+  const wsInstance = useMemo(
+    () => (isBrowser ? new WebSocket('ws://localhost:8000/ws') : null),
+    [],
+  );
+
+  const [message, setMessage] = React.useState('');
+
+  const [messages, setMessages] = React.useState<string[]>([]);
+
   useEffect(() => {
-    if (socket == null || !socket.connected) {
-      socket = io('ws://localhost:5001', {
-        reconnectionDelayMax: 100,
-      });
+    if (wsInstance) {
+      wsInstance.onopen = () => {
+        console.log('connected');
+        connected = true;
+      };
+
+      wsInstance.onmessage = (e) => {
+        console.log('message', e.data);
+        setMessages((messages) => [...messages, e.data]);
+      };
+
+      wsInstance.onclose = () => {
+        console.log('disconnected');
+        connected = false;
+      };
+
+      wsInstance.onerror = (e) => {
+        console.log('error', e.message);
+        connected = false;
+      };
     }
-    socket.on('connect', () => {
-      console.log('connected');
-      connected = true;
-    });
-    socket.on('disconnect', () => {
-      console.log('disconnected');
-      connected = false;
-    });
-  }, []);
+  }, [wsInstance]);
+
+  function sendMessage() {
+    if (wsInstance) {
+      wsInstance.send(message);
+      setMessage('');
+    }
+  }
+
+  console.log(isBrowser);
 
   return (
     <Box className={styles.container}>
@@ -49,6 +83,18 @@ const Home: NextPage = ({}) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.main}>
+        <Box>
+          <input
+            className="input-chat"
+            type="text"
+            placeholder="Chat message ..."
+            onChange={(e) => setMessage(e.target.value)}
+            value={message}
+          ></input>
+          <button className="submit-chat" onClick={sendMessage}>
+            Send
+          </button>
+        </Box>
         <Typography component="h1" className={styles.title}>
           Welcome to <a href="https://nextjs.org">Next.js!</a>
         </Typography>

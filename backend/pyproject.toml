@@ -15,6 +15,9 @@ Flask-SocketIO = "^5.3.1"
 Flask-Cors = "^3.0.10"
 Flask-SQLAlchemy = "^2.5.1"
 bcrypt = "^4.0.0"
+fastapi = "^0.85.0"
+uvicorn = "^0.18.3"
+websockets = "^10.3"
 
 [tool.poetry.dev-dependencies]
 pylint = "^2.11.1"
