@@ -29,6 +29,9 @@
   "[typescriptreact]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.python"
+  },
   "[xml]": {
     "editor.defaultFormatter": "redhat.vscode-xml"
   },
@@ -51,5 +54,22 @@
   "editor.formatOnSave": true,
   "eslint.format.enable": true,
   "eslint.workingDirectories": ["apps/nextjs", "apps/expo"],
-  "files.eol": "\n"
+  "files.eol": "\n",
+  "mypy.configFile": "./backend/mypy.ini",
+  "mypy.runUsingActiveInterpreter": true,
+  "python.defaultInterpreterPath": "./backend/.venv/bin/python",
+  "python.formatting.provider": "black",
+  "python.testing.pytestEnabled": true,
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 5432,
+      "driver": "PostgreSQL",
+      "name": "postgres",
+      "database": "postgres",
+      "username": "postgres",
+      "password": "changeme"
+    }
+  ]
 }
