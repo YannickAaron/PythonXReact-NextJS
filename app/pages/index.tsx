@@ -30,7 +30,6 @@ export const isBrowser = typeof window !== 'undefined';
   : null;*/
 
 const Home: NextPage = ({}) => {
-  let connected = false;
   let progress = 0;
 
   const wsInstance = useMemo(
@@ -42,11 +41,13 @@ const Home: NextPage = ({}) => {
 
   const [messages, setMessages] = React.useState<string[]>([]);
 
+  const [connected, setConnected] = React.useState(false);
+
   useEffect(() => {
     if (wsInstance) {
       wsInstance.onopen = () => {
         console.log('connected');
-        connected = true;
+        setConnected(true);
       };
 
       wsInstance.onmessage = (e) => {
@@ -56,12 +57,7 @@ const Home: NextPage = ({}) => {
 
       wsInstance.onclose = () => {
         console.log('disconnected');
-        connected = false;
-      };
-
-      wsInstance.onerror = (e) => {
-        console.log('error', e.message);
-        connected = false;
+        setConnected(false);
       };
     }
   }, [wsInstance]);
@@ -73,8 +69,6 @@ const Home: NextPage = ({}) => {
     }
   }
 
-  console.log(isBrowser);
-
   return (
     <Box className={styles.container}>
       <Head>
@@ -84,6 +78,9 @@ const Home: NextPage = ({}) => {
       </Head>
       <main className={styles.main}>
         <Box>
+          {messages.map((message, index) => (
+            <Box key={index}>{message}</Box>
+          ))}
           <input
             className="input-chat"
             type="text"
