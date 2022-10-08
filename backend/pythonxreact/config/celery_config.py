@@ -20,6 +20,7 @@ class BaseConfig:
         # custom queue
         Queue("universities"),
         Queue("university"),
+        Queue("predict"),
     )
 
     CELERY_TASK_ROUTES = (route_task,)
