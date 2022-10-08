@@ -21,3 +21,10 @@ coverage/
 **/*.eslintcache
 
 .json-autotranslate-cache
+
+*__pycache__
+*.venv
+
+#ignore __pycache__ and .venv in all subdirectories
+**/__pycache__
+**/.venv

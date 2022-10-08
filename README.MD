@@ -11,3 +11,7 @@ start celery worker
 ```
 poetry run celery -A main.celery worker --loglevel=info -Q universities,university
 ```
+
+https://github.com/GregaVrbancic/fastapi-celery/blob/master/app/worker/celery_app.py
+
+https://www.youtube.com/watch?v=puy3LdG2nYA

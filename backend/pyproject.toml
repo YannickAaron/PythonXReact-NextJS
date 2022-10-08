@@ -21,6 +21,7 @@ websockets = "^10.3"
 celery = "^5.2.7"
 flower = "^1.2.0"
 httpx = "^0.23.0"
+redis = "^4.3.4"
 
 [tool.poetry.dev-dependencies]
 pylint = "^2.11.1"

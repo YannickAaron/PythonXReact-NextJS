@@ -17,6 +17,15 @@ services:
       - pythonXReact
     restart: unless-stopped
 
+  redis:
+    image: "bitnami/redis:5.0.4"
+    environment:
+      - REDIS_PASSWORD=password123
+    ports:
+      - "6379:6379"
+    volumes:
+      - "redis_data:/bitnami/redis/data"
+
   rabbitmq:
     container_name: rabbitmq_container
     image: rabbitmq:3-management
@@ -39,3 +48,4 @@ networks:
 
 volumes:
     postgres:
+    redis_data:
