@@ -22,9 +22,10 @@ celery = "^5.2.7"
 flower = "^1.2.0"
 httpx = "^0.23.0"
 redis = "^4.3.4"
-torch = {path = "nightlytorch/torch-1.14.0.dev20221008-cp39-none-macosx_11_0_arm64.whl"}
-torchaudio = {path = "nightlytorch/torchaudio-0.13.0.dev20221007-cp39-cp39-macosx_12_0_arm64.whl"}
-torchvision = {path = "nightlytorch/torchvision-0.15.0.dev20221007-cp39-cp39-macosx_11_0_arm64.whl"}
+torch = "^1.12.1"
+torchaudio = "^0.12.1"
+torchvision = "^0.13.1"
+
 
 [tool.poetry.dev-dependencies]
 pylint = "^2.11.1"
